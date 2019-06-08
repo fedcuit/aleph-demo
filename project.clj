@@ -4,10 +4,10 @@
                  [compojure "1.6.1"]
                  [aleph "0.4.6"]
                  [org.clojure/core.async "0.4.490"]
-                 [ring-middleware-params ""]]
-  :plugins [[lein-ring "0.12.5"]
-            [lein-cljfmt "0.6.3"]]
-  :ring {:handler aleph-demo.handler/app}
+                 [ring/ring-core "1.7.1"]
+                 [funcool/promesa "1.9.0"]]
+  :plugins [[lein-cljfmt "0.6.3"]]
+  :main aleph-demo.core
   :profiles
   {:dev  {:dependencies [[javax.servlet/servlet-api "2.5"]
                          [ring/ring-mock "0.3.2"]

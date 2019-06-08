@@ -9,31 +9,23 @@
    [clojure.java.io :refer [file]]
    [compojure.core :refer :all]
    [compojure.route :as route]
-   [ring.middleware.params :refer [wrap-params]]))
+   [promesa.core :as p]
+   [ring.middleware.params :refer [wrap-params]]
+   [ring.util.response :refer [response]]))
 
 (defn hello-world-handler
-  [req] {:status  200
-         :headers {"content-type" "text/plain"}
-         :body    "hello world!"})
+  [req] (response "Hello world"))
 
 (defn delayed-hello-world-handler
   [req]
-  (d/timeout!
-   (d/deferred)
-   1000
-   (hello-world-handler req)))
+  (let [d (d/deferred)]
+    (-> (p/delay 1000 (response "Hello world"))
+        (p/branch #(d/success! d %) #(d/error! d %)))
+    d))
 
 (extend-protocol Renderable
   manifold.deferred.IDeferred
   (render [d _] d))
-
-(defn delayed-hello-world-handler
-  [req]
-  (s/take!
-   (s/->source
-    (a/go
-      (let [_ (a/<! (a/timeout 1000))]
-        (hello-world-handler req))))))
 
 (defn streaming-numbers-handler
   [{:keys [params]}]
